@@ -5,33 +5,22 @@ Filtered Login Module
 from typing import List
 import re
 import logging
-import os
+from os import environ
 import mysql.connector
 
 
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
-db_username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
-db_password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
-db_host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-db_name = os.getenv('PERSONAL_DATA_DB_NAME')
-
-
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """
-    returns a connector to the database
-    """
-    try:
-        connection = mysql.connector.connect(
-                user=db_username,
-                password=db_password,
-                host=db_host,
-                database=db_name
-            )
-        if connection.is_connected():
-            return connection
-    except Exception as e:
-        print(f"Error while connecting to MySQL: {e}")
-        return None
+    """ Returns a connector to a MySQL database """
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
+
+    cnx = mysql.connector.connection.MySQLConnection(user=username,
+                                                     password=password,
+                                                     host=host,
+                                                     database=db_name)
+    return cnx
 
 
 def get_logger() -> logging.Logger:
