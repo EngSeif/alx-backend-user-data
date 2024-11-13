@@ -45,6 +45,10 @@ def unAuthorized(error) -> str:
 
 @app.before_request
 def handle_auth():
+    """
+    handle auth for
+    each request
+    """
     r_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
     if auth is None:
         return
