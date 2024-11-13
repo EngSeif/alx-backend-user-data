@@ -13,6 +13,9 @@ class BasicAuth(Auth):
     Basic Auth Class
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+
     def extract_base64_authorization_header(self,
                                             authorization_header: str) -> str:
         """
@@ -79,3 +82,14 @@ class BasicAuth(Auth):
             if user.is_valid_password(user_pwd):
                 return user
         return None
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        retrieves the User instance for a request
+        """
+        authHeader = self.authorization_header(request)
+        auth64 = self.extract_base64_authorization_header(authHeader)
+        dataDecoded = self.decode_base64_authorization_header(auth64)
+        usrCredit = self.extract_user_credentials(dataDecoded)
+        user = self.user_object_from_credentials(usrCredit[0], usrCredit[1])
+        return user
