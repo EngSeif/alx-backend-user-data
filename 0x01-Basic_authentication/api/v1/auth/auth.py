@@ -22,6 +22,8 @@ class Auth:
             return True
         if not path.endswith('/'):
             path_two = path + '/'
+        else:
+            path_two = path[:-1]
         if excluded_paths is None or len(excluded_paths) == 0:
             return True
         if path in excluded_paths:
@@ -35,7 +37,9 @@ class Auth:
         authorization_header
         public method
         """
-        return None
+        if request is None:
+            return None
+        return request.headers.get("Authorization")
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
