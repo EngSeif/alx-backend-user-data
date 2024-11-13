@@ -17,7 +17,18 @@ class Auth:
         require_auth public
         method
         """
-        return False
+        path_two = None
+        if path is None:
+            return True
+        if not path.endswith('/'):
+            path_two = path + '/'
+        if excluded_paths is None or len(excluded_paths) == 0:
+            return True
+        if path in excluded_paths:
+            return False
+        if path_two in excluded_paths:
+            return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
