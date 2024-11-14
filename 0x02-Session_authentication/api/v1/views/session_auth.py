@@ -10,20 +10,20 @@ from models.user import User
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """
-    
+    Handle login of user
     """
     email = request.form.get('email')
-    password  = request.form.get('password')
+    password = request.form.get('password')
     if email is None or len(email) == 0:
-        return jsonify({ "error": "email missing" }), 400
+        return jsonify({"error": "email missing"}), 400
     if password is None or len(password) == 0:
-        return jsonify({ "error": "password missing" }), 400
+        return jsonify({"error": "password missing"}), 400
     foundUsers = User.search({"email": email})
     if not foundUsers:
-        return jsonify({ "error": "no user found for this email" }), 404
+        return jsonify({"error": "no user found for this email"}), 404
     for user in foundUsers:
         if not user.is_valid_password(password):
-                return jsonify({ "error": "wrong password" }), 401
+            return jsonify({"error": "wrong password"}), 401
     from api.v1.app import auth
     user = foundUsers[0]
     GeneratedSessionID = auth.create_session(user.id)
@@ -33,3 +33,16 @@ def login():
     response.set_cookie(session_name, GeneratedSessionID)
 
     return response
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def logout():
+    """
+    Handle loginout of user
+    """
+    from api.v1.app import auth
+    destroy_session = auth.destroy_session(request)
+    if not destroy_session:
+        abort(404)
+    return jsonify({}), 200
