@@ -55,12 +55,16 @@ def handle_auth():
     handle auth for
     each request
     """
-    r_list = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+    r_list = ['/api/v1/status/', '/api/v1/unauthorized/',
+              '/api/v1/forbidden/', '/api/v1/auth_session/login/']
     request.current_user = auth.current_user(request)
     if auth is None:
         return
     if not auth.require_auth(request.path, r_list):
         return
+    if auth.authorization_header(request) is None:
+        if auth.session_cookie(request) is None:
+            abort(401)
     if auth.authorization_header(request) is None:
         abort(401)
     if auth.current_user(request) is None:
